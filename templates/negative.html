@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Not found · CinePick{% endblock %}
+
+{% block content %}
+<div class="state-card state-card--error">
+  <div class="state-card__art" aria-hidden="true">
+    <img src="https://picsum.photos/seed/lost1/200/280" alt="" width="64" height="92" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/lost2/200/280" alt="" width="64" height="92" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/lost3/200/280" alt="" width="64" height="92" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+  </div>
+  <h1>Title not in the vault</h1>
+  <p>
+    <span class="query">“{{ name }}”</span> isn’t in our dataset. Try another spelling or a well-known release.
+  </p>
+  <a class="btn btn--primary" href="{{ url_for('index') }}">Back to search</a>
+</div>
+{% endblock %}

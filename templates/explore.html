@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Explore · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--compact">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Random spotlight</p>
+  <h1>Because you might like…</h1>
+  <p class="hero__lead">Seeded from your history file: <strong class="text-accent">“{{ search_name }}”</strong></p>
+  {% if movie_posters is defined and movie_posters %}
+  <div class="hero__filmstrip" aria-hidden="true">
+    {% for p in movie_posters[:5] %}
+    <img src="{{ p }}" alt="" width="52" height="76" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+<section aria-labelledby="rec-heading">
+  <h2 class="section-title" id="rec-heading">Recommendations <span>for “{{ search_name }}”</span></h2>
+  {% include 'includes/movie_cards.html' %}
+</section>
+
+<p class="dash-note">
+  <a href="{{ url_for('explore_random') }}" class="btn btn--ghost" style="margin-right: 0.5rem;">Shuffle again</a>
+  <a href="{{ url_for('search_page') }}">Search instead</a>
+  ·
+  <a href="{{ url_for('dashboard') }}">Dashboard</a>
+</p>
+{% endblock %}

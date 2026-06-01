@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Info · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--compact">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Documentation</p>
+  <h1>How CinePick works</h1>
+  <p class="hero__lead">Content-based recommendations using text features from each film—not collaborative filtering.</p>
+</section>
+
+<div class="info-layout">
+  <article class="info-block">
+    <h2>Pipeline</h2>
+    <ol class="info-steps">
+      <li><strong>Dataset</strong> — Each row is a movie with metadata: title, overview, genres, keywords, cast, crew, and a combined text field called <code>soup</code>.</li>
+      <li><strong>Vectorization</strong> — English stop words are removed; the rest is turned into a sparse bag-of-words matrix with <code>CountVectorizer</code> (scikit-learn).</li>
+      <li><strong>Similarity</strong> — Cosine similarity compares your movie’s vector to every other movie. The top matches (excluding itself) become recommendations.</li>
+      <li><strong>Logging</strong> — When you search or explore, the title is appended to <code>movieR.csv</code> for a simple interaction history.</li>
+    </ol>
+  </article>
+
+  <article class="info-block">
+    <h2>Fuzzy angle</h2>
+    <p>The “fuzzy” part of the project name refers to soft, overlapping similarity in content space: many weak word overlaps add up to a strong cosine score, rather than a single exact keyword match. It is not the same as fuzzy string matching on the title alone.</p>
+  </article>
+
+  <article class="info-block">
+    <h2>Images</h2>
+    <p>Posters use placeholder photography (Picsum) keyed by TMDB-style <code>id</code> so each film gets a stable image. The bundled CSV does not include <code>poster_path</code>; wiring the real TMDB image CDN would need that field or an API key.</p>
+  </article>
+
+  <article class="info-block">
+    <h2>Tech stack</h2>
+    <ul class="info-list">
+      <li>Flask — web UI and routing</li>
+      <li>pandas — CSV loading</li>
+      <li>scikit-learn — <code>CountVectorizer</code>, <code>cosine_similarity</code></li>
+    </ul>
+  </article>
+
+  <article class="info-block info-block--nav">
+    <h2>Screens</h2>
+    <ul class="info-list">
+      <li><a href="{{ url_for('dashboard') }}">Dashboard</a> — overview and shortcuts</li>
+      <li><a href="{{ url_for('search_page') }}">Search</a> — pick a title and submit</li>
+      <li><a href="{{ url_for('explore_random') }}">Explore</a> — random history-based run</li>
+      <li>Results — opens after a successful search</li>
+    </ul>
+  </article>
+</div>
+
+<p class="dash-note"><a href="{{ url_for('dashboard') }}">← Back to dashboard</a></p>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}CinePick · Discover films{% endblock %}
+
+{% block content %}
+<section class="hero hero--home">
+  <div class="hero__main">
+    <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Live recommendations</p>
+    <h1>Find your next favorite film</h1>
+    <p>Bold visuals, instant suggestions, and recommendations tuned to what you already love.</p>
+    <div class="hero__stats" aria-label="Platform highlights">
+      <div class="hero__stat">
+        <span class="hero__stat-value">10</span>
+        <span class="hero__stat-label">top picks</span>
+      </div>
+      <div class="hero__stat">
+        <span class="hero__stat-value">1 click</span>
+        <span class="hero__stat-label">quick search</span>
+      </div>
+      <div class="hero__stat">
+        <span class="hero__stat-value">Smart</span>
+        <span class="hero__stat-label">fuzzy matching</span>
+      </div>
+    </div>
+    <div class="hero__pills" aria-label="Popular moods">
+      <span>Action</span>
+      <span>Sci-Fi</span>
+      <span>Thriller</span>
+      <span>Romance</span>
+      <span>Adventure</span>
+    </div>
+  </div>
+  <div class="hero__collage" aria-hidden="true">
+    <img src="https://picsum.photos/seed/cinehero1/400/520" alt="" width="240" height="320" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/cinehero2/400/520" alt="" width="240" height="320" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/cinehero3/400/520" alt="" width="240" height="320" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+  </div>
+</section>
+
+<div class="search-wrap">
+  <div class="search-card">
+    <div class="search-card__glow" aria-hidden="true"></div>
+    <form action="{{ url_for('main') }}" method="post">
+      <label for="movie_name">Search a movie</label>
+      <p class="search-card__hint">Start typing a title and choose from suggestions for best results.</p>
+      <div class="search-row">
+        <input
+          id="movie_name"
+          name="movie_name"
+          type="text"
+          list="suggestions"
+          placeholder="Try a title from the list…"
+          autocomplete="off"
+          required
+        />
+        <button class="btn btn--primary" type="submit">Get picks</button>
+      </div>
+
+      <fieldset class="filter-panel">
+        <legend>Filters</legend>
+        <div class="filter-grid">
+          <div class="filter-field">
+            <label for="sort">Sort by</label>
+            <select id="sort" name="sort" aria-label="Sort results">
+              {% set sort_val = selected_sort|default('similar') %}
+              <option value="similar" {% if sort_val == 'similar' %}selected{% endif %}>Similarity</option>
+              <option value="rating_desc" {% if sort_val == 'rating_desc' %}selected{% endif %}>Rating (high → low)</option>
+              <option value="rating_asc" {% if sort_val == 'rating_asc' %}selected{% endif %}>Rating (low → high)</option>
+              <option value="date_desc" {% if sort_val == 'date_desc' %}selected{% endif %}>Newest</option>
+              <option value="date_asc" {% if sort_val == 'date_asc' %}selected{% endif %}>Oldest</option>
+            </select>
+          </div>
+
+          <div class="filter-field">
+            <label for="min_rating">Minimum rating</label>
+            <input
+              id="min_rating"
+              name="min_rating"
+              type="number"
+              step="0.1"
+              min="0"
+              max="10"
+              placeholder="e.g. 7.5"
+              value="{{ min_rating|default('') }}"
+            />
+          </div>
+
+          <div class="filter-field">
+            <label for="year_from">Release year from</label>
+            <input
+              id="year_from"
+              name="year_from"
+              type="number"
+              min="1900"
+              max="2100"
+              placeholder="e.g. 2010"
+              value="{{ year_from|default('') }}"
+            />
+          </div>
+
+          <div class="filter-field">
+            <label for="year_to">Release year to</label>
+            <input
+              id="year_to"
+              name="year_to"
+              type="number"
+              min="1900"
+              max="2100"
+              placeholder="e.g. 2024"
+              value="{{ year_to|default('') }}"
+            />
+          </div>
+        </div>
+      </fieldset>
+      <div class="search-actions">
+        <a class="btn btn--ghost" href="{{ url_for('genre_page') }}">Open Genres</a>
+      </div>
+      <p class="search-card__meta">Tip: exact spelling gives the best recommendations.</p>
+      <datalist id="suggestions">
+        {% for s in suggestions|default([]) %}
+        <option value="{{ s }}"></option>
+        {% endfor %}
+      </datalist>
+    </form>
+  </div>
+</div>
+
+{% if movie_names is defined and movie_names %}
+<section class="origin-spotlight" aria-labelledby="origin-title">
+  <div class="origin-spotlight__poster-wrap">
+    <img
+      class="origin-spotlight__poster"
+      src="{{ original_movie_poster }}"
+      alt="Original poster for {{ original_movie_name }}"
+      onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-main/500/750';"
+      width="500"
+      height="750"
+      loading="lazy"
+      decoding="async"
+      referrerpolicy="no-referrer"
+    />
+  </div>
+  <div class="origin-spotlight__content">
+    <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Original movie</p>
+    <h2 class="section-title" id="origin-title">You searched <span>“{{ original_movie_name }}”</span></h2>
+    {% if original_movie_date %}
+    <p class="origin-spotlight__date">Release date: {{ original_movie_date }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<section aria-labelledby="rec-heading">
+  <h2 class="section-title" id="rec-heading">Because you liked <span>“{{ search_name }}”</span></h2>
+  <div class="movie-grid">
+    {% set mt = movie_type if movie_type is defined else [] %}
+    {% set type_offset = (movie_names|length) - (mt|length) %}
+    {% set posters = movie_posters if movie_posters is defined else [] %}
+    {% for i in range(movie_names|length) %}
+    {% set hue = (movieid[i]|int % 360) if movieid is defined and movieid|length > i else (i * 37 % 360) %}
+    {% set purl = posters[i] if posters|length > i else 'https://picsum.photos/seed/fallback-card/500/750' %}
+    <article class="movie-card movie-card--visual" style="--card-hue: {{ hue }};">
+      <div class="movie-card__poster-wrap">
+        <img
+          class="movie-card__poster"
+          src="{{ purl }}"
+          alt="Visual for {{ movie_names[i] }}"
+          onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-card/500/750';"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+        />
+        <span class="movie-card__poster-shade" aria-hidden="true"></span>
+        <span class="movie-card__poster-edge" aria-hidden="true"></span>
+      </div>
+      <div class="movie-card__body">
+        <div class="movie-card__top">
+          <div>
+            <h3 class="movie-card__title">{{ movie_names[i] }}</h3>
+            {% if movie_date[i] %}
+            <p class="movie-card__meta">{{ movie_date[i] }}</p>
+            {% endif %}
+          </div>
+          {% if movie_ratings[i] is defined and movie_ratings[i] is not none and movie_ratings[i] != '' %}
+          <span class="rating" title="Average rating">★ {{ "%.1f"|format(movie_ratings[i]|float) }}</span>
+          {% endif %}
+        </div>
+        {% if movie_overview[i] %}
+        <p class="movie-card__overview">{{ movie_overview[i] }}</p>
+        {% endif %}
+        {% if mt and i >= type_offset and (i - type_offset) < (mt|length) %}
+        <div class="chips">
+          <span class="chip">{{ mt[i - type_offset] }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Genres · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--compact">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Genre explorer</p>
+  <h1>Browse by genre</h1>
+  <p class="hero__lead">Open any genre button to view movies separated by category.</p>
+</section>
+
+<section aria-label="Genre buttons" class="genre-toolbar">
+  {% for g in genres|default([]) %}
+  <a
+    href="{{ url_for('genre_page', genre=g) }}"
+    class="genre-btn {% if selected_genre == g %}genre-btn--active{% endif %}"
+  >
+    {{ g }}
+  </a>
+  {% endfor %}
+</section>
+
+<section aria-labelledby="genre-heading">
+  <h2 class="section-title" id="genre-heading">
+    Movies in <span>{{ selected_genre }}</span>
+  </h2>
+  {% if movie_names %}
+    {% include 'includes/movie_cards.html' %}
+  {% else %}
+  <div class="state-card state-card--error">
+    <h1>No movies found</h1>
+    <p>Try another genre button.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

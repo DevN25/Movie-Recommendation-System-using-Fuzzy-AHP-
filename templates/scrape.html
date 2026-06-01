@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Web Scraping · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--compact">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Web scraping</p>
+  <h1>TMDB Top Rated</h1>
+  <p class="hero__lead">Live scraped titles (no API key). Posters are fetched from TMDB pages.</p>
+  <div class="hero__pills hero__pills--center" aria-label="Source badges">
+    <span>TMDB</span>
+    <span>HTML scrape</span>
+    <span>Posters cached</span>
+  </div>
+</section>
+
+{% if movies %}
+<section aria-labelledby="scrape-heading">
+  <h2 class="section-title" id="scrape-heading">Top rated movies</h2>
+  <div class="movie-grid">
+    {% for m in movies %}
+    {% set hue = (loop.index0 * 37) % 360 %}
+    <article class="movie-card movie-card--visual" style="--card-hue: {{ hue }};">
+      <div class="movie-card__poster-wrap">
+        <img
+          class="movie-card__poster"
+          src="{{ m.poster }}"
+          alt="Poster for {{ m.title }}"
+          onerror="this.onerror=null;this.src='https://picsum.photos/seed/scrape-fallback-{{ loop.index }}/500/750';"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+        />
+        <span class="movie-card__poster-shade" aria-hidden="true"></span>
+        <span class="movie-card__poster-edge" aria-hidden="true"></span>
+      </div>
+      <div class="movie-card__body">
+        <div class="movie-card__top">
+          <div>
+            <h3 class="movie-card__title">{{ m.title }}</h3>
+            {% if m.year %}
+            <p class="movie-card__meta">{{ m.year }}</p>
+            {% endif %}
+          </div>
+          {% if m.rating %}
+          <span class="rating" title="IMDb rating">★ {{ m.rating }}</span>
+          {% endif %}
+        </div>
+        {% if m.url %}
+        <div class="search-actions">
+          <a class="btn btn--ghost" href="{{ m.url }}" target="_blank" rel="noreferrer">Open on TMDB</a>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<div class="state-card state-card--error">
+  <h1>Scrape failed</h1>
+  <p>TMDB may be blocking requests or the page structure changed. Try again in a moment.</p>
+</div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c0b12" />
+  <title>{% block title %}CinePick{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient__orb ambient__orb--a"></div>
+    <div class="ambient__orb ambient__orb--b"></div>
+    <div class="ambient__orb ambient__orb--c"></div>
+    <div class="ambient__orb ambient__orb--d"></div>
+    <div class="ambient__orb ambient__orb--e"></div>
+    <div class="ambient__grid"></div>
+  </div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="layout">
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="{{ url_for('index') }}">
+          <span class="brand__mark" aria-hidden="true">
+            <span class="brand__mark-inner">▶</span>
+          </span>
+          <span class="brand__copy">
+            <span class="brand__text">CinePick</span>
+            <span class="brand__tag">Studio-grade picks</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__link" href="{{ url_for('index') }}">Home</a>
+          <a class="nav__link" href="{{ url_for('genre_page') }}">Genres</a>
+          <a class="nav__link nav__link--accent" href="{{ url_for('scrape_page') }}">Web Scraping</a>
+        </nav>
+        {% block header_actions %}{% endblock %}
+      </div>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <span class="site-footer__dot"></span>
+      Fuzzy-based discovery · Flask
+    </footer>
+  </div>
+</body>
+</html>

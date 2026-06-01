@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Picks for “{{ search_name }}” · CinePick{% endblock %}
+
+{% block header_actions %}
+<a class="btn btn--ghost" href="{{ url_for('index') }}">← Home</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-actions">
+  <a class="btn btn--ghost" href="{{ url_for('index') }}">← New search</a>
+</div>
+
+<section class="hero hero--compact">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Your lineup</p>
+  <h1>Curated for you</h1>
+  <p class="hero__lead">Top matches for <strong class="text-accent">“{{ search_name }}”</strong></p>
+  {% if min_rating is defined and min_rating != '' %}
+  <p class="hero__lead">Min rating: <strong class="text-accent">{{ min_rating }}</strong></p>
+  {% endif %}
+  {% if year_from is defined and year_from != '' or year_to is defined and year_to != '' %}
+  <p class="hero__lead">
+    Year range:
+    <strong class="text-accent">{{ year_from|default('') }}</strong>
+    {% if year_to is defined and year_to != '' %}– <strong class="text-accent">{{ year_to }}</strong>{% endif %}
+  </p>
+  {% endif %}
+  {% if movie_names is defined %}
+  <div class="hero__stats hero__stats--center" aria-label="Recommendation summary">
+    <div class="hero__stat">
+      <span class="hero__stat-value">{{ movie_names|length }}</span>
+      <span class="hero__stat-label">recommendations</span>
+    </div>
+    <div class="hero__stat">
+      <span class="hero__stat-value">Rated</span>
+      <span class="hero__stat-label">community picks</span>
+    </div>
+  </div>
+  {% endif %}
+  {% if movie_posters is defined and movie_posters %}
+  <div class="hero__filmstrip" aria-hidden="true">
+    {% for p in movie_posters[:5] %}
+    <img src="{{ p }}" alt="" width="52" height="76" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="hero__pills hero__pills--center" aria-label="Viewing moods">
+    <span>Tonight's picks</span>
+    <span>Critic-loved</span>
+    <span>Binge-worthy</span>
+  </div>
+</section>
+
+<section class="origin-spotlight" aria-labelledby="origin-title">
+  <div class="origin-spotlight__poster-wrap">
+    <img
+      class="origin-spotlight__poster"
+      src="{{ original_movie_poster }}"
+      alt="Original poster for {{ original_movie_name }}"
+      onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-main/500/750';"
+      width="500"
+      height="750"
+      loading="lazy"
+      decoding="async"
+      referrerpolicy="no-referrer"
+    />
+  </div>
+  <div class="origin-spotlight__content">
+    <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Original movie</p>
+    <h2 class="section-title" id="origin-title">You searched <span>“{{ original_movie_name }}”</span></h2>
+    {% if original_movie_date %}
+    <p class="origin-spotlight__date">Release date: {{ original_movie_date }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<div class="movie-grid">
+  {% set mt = movie_type if movie_type is defined else [] %}
+  {% set type_offset = (movie_names|length) - (mt|length) %}
+  {% set posters = movie_posters if movie_posters is defined else [] %}
+  {% for i in range(movie_names|length) %}
+  {% set hue = (movieid[i]|int % 360) if movieid is defined and movieid|length > i else (i * 37 % 360) %}
+  {% set purl = posters[i] if posters|length > i else 'https://picsum.photos/seed/fallback-card/500/750' %}
+  <article class="movie-card movie-card--visual" style="--card-hue: {{ hue }};">
+    <div class="movie-card__poster-wrap">
+      <img
+        class="movie-card__poster"
+        src="{{ purl }}"
+        alt="Visual for {{ movie_names[i] }}"
+        onerror="this.onerror=null;this.src='https://picsum.photos/seed/fallback-card/500/750';"
+        width="480"
+        height="720"
+        loading="lazy"
+        decoding="async"
+        referrerpolicy="no-referrer"
+      />
+      <span class="movie-card__poster-shade" aria-hidden="true"></span>
+      <span class="movie-card__poster-edge" aria-hidden="true"></span>
+    </div>
+    <div class="movie-card__body">
+      <div class="movie-card__top">
+        <div>
+          <h3 class="movie-card__title">{{ movie_names[i] }}</h3>
+          {% if movie_date[i] %}
+          <p class="movie-card__meta">{{ movie_date[i] }}</p>
+          {% endif %}
+        </div>
+        {% if movie_ratings[i] is defined and movie_ratings[i] is not none and movie_ratings[i] != '' %}
+        <span class="rating" title="Average rating">★ {{ "%.1f"|format(movie_ratings[i]|float) }}</span>
+        {% endif %}
+      </div>
+      {% if movie_overview[i] %}
+      <p class="movie-card__overview">{{ movie_overview[i] }}</p>
+      {% endif %}
+      {% if mt and i >= type_offset and (i - type_offset) < (mt|length) %}
+      <div class="chips">
+        <span class="chip">{{ mt[i - type_offset] }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--compact dash-hero">
+  <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Control center</p>
+  <h1>Dashboard</h1>
+  <p class="hero__lead">Jump to any area—search, learn how it works, or grab a random spotlight.</p>
+</section>
+
+<div class="dash-stats">
+  <div class="dash-stat">
+    <span class="dash-stat__value">{{ movie_count }}</span>
+    <span class="dash-stat__label">Titles in catalog</span>
+  </div>
+  <div class="dash-stat">
+    <span class="dash-stat__value">{{ history_count }}</span>
+    <span class="dash-stat__label">Searches logged</span>
+  </div>
+  <div class="dash-stat">
+    <span class="dash-stat__value">10</span>
+    <span class="dash-stat__label">Picks per run</span>
+  </div>
+</div>
+
+<div class="dash-grid" role="navigation" aria-label="Main sections">
+  <a class="dash-card dash-card--search" href="{{ url_for('search_page') }}">
+    <span class="dash-card__icon" aria-hidden="true">🔎</span>
+    <h2 class="dash-card__title">Search</h2>
+    <p class="dash-card__text">Type any movie from the dataset and get a ranked list of similar films.</p>
+    <span class="dash-card__cta">Open search →</span>
+  </a>
+  <a class="dash-card dash-card--explore" href="{{ url_for('explore_random') }}">
+    <span class="dash-card__icon" aria-hidden="true">✨</span>
+    <h2 class="dash-card__title">Explore</h2>
+    <p class="dash-card__text">Random pick from your history file, then instant recommendations—no typing.</p>
+    <span class="dash-card__cta">Random spotlight →</span>
+  </a>
+  <a class="dash-card dash-card--info" href="{{ url_for('info_page') }}">
+    <span class="dash-card__icon" aria-hidden="true">ℹ️</span>
+    <h2 class="dash-card__title">Info</h2>
+    <p class="dash-card__text">How the engine works: vectors, cosine similarity, and the TMDB-style dataset.</p>
+    <span class="dash-card__cta">Read info →</span>
+  </a>
+</div>
+
+<p class="dash-note">Results from search open on a separate <strong>Results</strong> screen after you submit the form.</p>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Search · CinePick{% endblock %}
+
+{% block content %}
+<section class="hero hero--home hero--narrow">
+  <div class="hero__main">
+    <p class="hero__badge"><span class="hero__badge-dot" aria-hidden="true"></span> Search</p>
+    <h1>Look up a movie</h1>
+    <p>Choose a title that exists in the catalog. You’ll be taken to the results page with posters and scores.</p>
+  </div>
+  <div class="hero__collage hero__collage--sm" aria-hidden="true">
+    <img src="https://picsum.photos/seed/search1/400/520" alt="" width="200" height="260" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/search2/400/520" alt="" width="200" height="260" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+    <img src="https://picsum.photos/seed/search3/400/520" alt="" width="200" height="260" loading="eager" decoding="async" referrerpolicy="no-referrer" />
+  </div>
+</section>
+
+<div class="search-wrap">
+  <div class="search-card">
+    <form action="{{ url_for('recommend') }}" method="post">
+      <label for="movie_name">Movie title</label>
+      <div class="search-row">
+        <input
+          id="movie_name"
+          name="movie_name"
+          type="text"
+          list="suggestions"
+          placeholder="e.g. Avatar, Inception…"
+          autocomplete="off"
+          required
+        />
+        <button class="btn btn--primary" type="submit">Get recommendations</button>
+      </div>
+      <datalist id="suggestions">
+        {% for s in suggestions|default([]) %}
+        <option value="{{ s }}"></option>
+        {% endfor %}
+      </datalist>
+    </form>
+  </div>
+</div>
+
+<p class="dash-note"><a href="{{ url_for('dashboard') }}">← Back to dashboard</a></p>
+{% endblock %}
